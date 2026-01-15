@@ -1,4 +1,6 @@
-const JWT_SECRET = "supersecretkey";
+import {token} from "./authController";
+
+export const JWT_SECRET = "supersecretkey";
 
 exports.requireAuth=(req, res, next)=>{
 
@@ -14,7 +16,7 @@ exports.requireAuth=(req, res, next)=>{
         const decoded = JWT_SECRET.verify(token, JWT_SECRET);
         req.user=decoded;
         next();
-        return res.json({user: {id: decoded.id, username: decode.username}})
+        return res.json({user: {id: decoded.id, username: decoded.username}})
     }
     catch{
         return res.status(401).json({error:"Token invalid"});
