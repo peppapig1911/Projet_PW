@@ -1,6 +1,6 @@
-import {token} from "./authController";
-
-export const JWT_SECRET = "supersecretkey";
+const { token } = require("./authController");
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = "supersecretkey";
 
 exports.requireAuth=(req, res, next)=>{
 
@@ -13,10 +13,9 @@ exports.requireAuth=(req, res, next)=>{
     const toker = authHeader.replace("Bearer", "");
 
     try{
-        const decoded = JWT_SECRET.verify(token, JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET);
         req.user=decoded;
         next();
-        return res.json({user: {id: decoded.id, username: decoded.username}})
     }
     catch{
         return res.status(401).json({error:"Token invalid"});

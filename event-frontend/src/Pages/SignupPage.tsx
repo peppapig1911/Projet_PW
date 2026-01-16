@@ -13,6 +13,6 @@ export default function LoginPage() {
     return(<form onSubmit={handleSubmit}>
         <input value={username} onChange={(e)=> setUsername(e.target.value)}></input>
         <input type="password" value={password} onChange={(e)=> setPassword(e.target.value)}></input>
-        <button type="submit">Se Connecter</button>
+        <button type="submit">S'inscrire</button>
     </form>)
 }

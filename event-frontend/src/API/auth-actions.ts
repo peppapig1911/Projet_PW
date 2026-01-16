@@ -16,7 +16,7 @@ export async function login(username:string, password:string):Promise<string>{
     return data.token;
 }
 
-export async function valiDateToken(): Promise<User> {
+export async function validateToken(): Promise<User> {
     const token = localStorage.getItem("token");
 
     if (!token) {
