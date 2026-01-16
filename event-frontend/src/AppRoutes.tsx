@@ -3,6 +3,7 @@ import {Navigate,Route,Routes} from "react-router-dom"
 import type {User} from "./utils/types"
 import LoginPage from "./Pages/LoginPage.tsx"
 import SignupPage from "./Pages/SignupPage.tsx";
+import LogSignPage from "./Pages/LogSignPage.tsx";
 
 type AppRoutesProps={
     user:User |null;
@@ -19,7 +20,7 @@ export default function AppRoutes({user,}:AppRoutesProps){
                        isAuthenticated ?(
                            <Navigate to="/events" replace/>
                        ): (
-                           <LoginPage/>
+                           <LogSignPage/>
                        )
                    }
             />

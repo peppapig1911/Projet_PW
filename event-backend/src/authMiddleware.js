@@ -1,6 +1,6 @@
 const { token } = require("./authController");
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = "supersecretkey";
+
 
 exports.requireAuth=(req, res, next)=>{
 

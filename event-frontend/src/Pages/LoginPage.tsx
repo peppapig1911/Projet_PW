@@ -11,8 +11,8 @@ export default function LoginPage() {
     }
 
     return(<form onSubmit={handleSubmit}>
-        <input value={username} onChange={(e)=> setUsername(e.target.value)}></input>
-        <input type="password" value={password} onChange={(e)=> setPassword(e.target.value)}></input>
+        <input placeholder="Nom d'utilisateur" value={username} onChange={(e)=> setUsername(e.target.value)}></input>
+        <input placeholder="Mot de passe" type="password" value={password} onChange={(e)=> setPassword(e.target.value)}></input>
         <button type="submit">Se Connecter</button>
     </form>)
 }
