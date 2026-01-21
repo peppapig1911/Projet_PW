@@ -1,16 +1,35 @@
-import "./styles/LogSignPage.scss"
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import LoginPage from "./LoginPage";
+import SignupPage from "./SignupPage";
+import "./styles/LogSignPage.scss";
 
 export default function LogSignPage() {
-    return (
-        <form>
-                <Link to="/login">
-                    <button type="button">Se connecter</button>
-                </Link>
+    const [activeTab, setActiveTab] = useState("login");
 
-                <Link to="/signup">
-                    <button type="submit">S'inscrire</button>
-                </Link>
-        </form>
+    return (
+        <div className="auth-wrapper">
+            <div className="auth-tabs-container">
+                <div className="tabs-header">
+                    <button
+                        className={activeTab === "login" ? "active" : ""}
+                        onClick={() => setActiveTab("login")}>
+                        Se Connecter
+                    </button>
+                    <button
+                        className={activeTab === "signup" ? "active" : ""}
+                        onClick={() => setActiveTab("signup")}>
+                        S'inscrire
+                    </button>
+                </div>
+
+                <div className="tabs-content">
+                    {activeTab === "login" ? (
+                        <LoginPage />
+                    ) : (
+                        <SignupPage onSignupSuccess={() => setActiveTab("login")} />
+                    )}
+                </div>
+            </div>
+        </div>
     );
 }

@@ -1,8 +1,7 @@
-import "./styles/SignUpPage.scss"
+import "./styles/LoginandSignupPage.scss"
 import { type FormEvent, useState } from "react";
-import { Link } from "react-router-dom";
 
-export default function SignupPage() {
+export default function SignupPage({onSignupSuccess}: { onSignupSuccess?: () => void }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [isRegistered, setIsRegistered] = useState(false);
@@ -29,18 +28,17 @@ export default function SignupPage() {
             console.error(error);
         }
     }
-
     if (isRegistered) {
         return (
-            <div className="auth-container">
-                <h2>Compte créé !</h2>
-                <Link to="/login">Se connecter</Link>
+            <div className="success-message">
+                <h2>Compte créé</h2>
+                <button onClick={onSignupSuccess}>Se connecter maintenant</button>
             </div>
         );
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="auth-form">
             <input
                 placeholder="Nom d'utilisateur"
                 value={username}
@@ -55,7 +53,6 @@ export default function SignupPage() {
                 required
             />
             <button type="submit">S'inscrire</button>
-            <Link to="/login">Déjà un compte ?</Link>
         </form>
     );
 }

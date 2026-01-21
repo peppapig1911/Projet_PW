@@ -1,5 +1,6 @@
 const { token } = require("./authController");
 const jwt = require("jsonwebtoken");
+const {JWT_SECRET} = require("./config");
 
 
 exports.requireAuth=(req, res, next)=>{

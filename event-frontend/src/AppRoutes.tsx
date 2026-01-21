@@ -4,6 +4,7 @@ import type {User} from "./utils/types"
 import LoginPage from "./Pages/LoginPage.tsx"
 import SignupPage from "./Pages/SignupPage.tsx";
 import LogSignPage from "./Pages/LogSignPage.tsx";
+import EventHomePage from "./Pages/EventHomePages.tsx";
 
 type AppRoutesProps={
     user:User |null;
@@ -18,7 +19,7 @@ export default function AppRoutes({user,}:AppRoutesProps){
             <Route path="/"
                    element={
                        isAuthenticated ?(
-                           <Navigate to="/events" replace/>
+                           <Navigate to="/eventshomepage" replace/>
                        ): (
                            <LogSignPage/>
                        )
@@ -28,7 +29,7 @@ export default function AppRoutes({user,}:AppRoutesProps){
             <Route path="/login"
                    element={
                        isAuthenticated ?(
-                           <Navigate to="/events" replace/>
+                           <Navigate to="/eventshomepage" replace/>
                        ): (
                             <LoginPage/>
                        )
@@ -37,9 +38,19 @@ export default function AppRoutes({user,}:AppRoutesProps){
             <Route path="/signup"
                    element={
                        isAuthenticated ?(
-                           <Navigate to="/events" replace/>
+                           <Navigate to="/eventshomepage" replace/>
                        ): (
                            <SignupPage/>
+                       )
+                   }
+            />
+            <Route path="/eventshomepage"
+                element=
+                   {
+                       isAuthenticated ?(
+                           <Navigate to="/" replace/>
+                    ):(
+                        <EventHomePage/>
                        )
                    }
             />

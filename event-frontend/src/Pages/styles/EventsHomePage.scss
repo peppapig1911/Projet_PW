@@ -1,0 +1,74 @@
+
+.events-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+
+  .events-header {
+    text-align: center;
+    margin-bottom: 3rem;
+
+    h1 {
+      color: #333;
+      font-size: 2.5rem;
+    }
+
+    p {
+      color: #666;
+    }
+  }
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.event-card {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px gray;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+
+  .event-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    h3 {
+      margin: 0;
+      color: #333;
+      font-size: 1.4rem;
+    }
+
+    p {
+      color: #555;
+      line-height: 1.5;
+      min-height: 3rem;
+    }
+
+    .register-btn {
+      background-color: #FBACBA;
+      color: white;
+      border: none;
+      padding: 0.8rem;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      outline: none;
+
+      &:hover {
+        background-color: #D64D8E;
+      }
+
+      &:active {
+        background-color: #A12B63;
+      }
+    }
+  }
+}
