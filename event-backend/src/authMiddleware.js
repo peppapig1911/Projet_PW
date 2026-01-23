@@ -1,24 +1,21 @@
-const { token } = require("./authController");
 const jwt = require("jsonwebtoken");
-const {JWT_SECRET} = require("./config");
+const { JWT_SECRET } = require("./config");
 
+exports.requireAuth = (req, res, next) => {
+    const authHeader = req.headers.authorization;
 
-exports.requireAuth=(req, res, next)=>{
-
-    const authHeader = req.header("Authorization");
-
-    if(!authHeader){
-        return res.status(401).json({error:"No token provided"});
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ error: "Error token" });
     }
 
-    const toker = authHeader.replace("Bearer", "");
+    const token = authHeader.split(" ")[1];
 
-    try{
+    try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        req.user=decoded;
+        req.user = decoded;
         next();
+    } catch (error) {
+        console.error("Erreur JWT détaillée:", error.message);
+        return res.status(401).json({ error: "Token invalid" });
     }
-    catch{
-        return res.status(401).json({error:"Token invalid"});
-    }
-}
+};

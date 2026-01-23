@@ -19,12 +19,17 @@ export default function LoginPage() {
                 body: JSON.stringify({ username, password }),
             });
 
+            const data = await response.json();
+
             if (response.ok) {
                 navigate("/eventshomepage");
+                localStorage.setItem("token", data.token); //stocker le token
             } else {
                 const data = await response.json();
                 alert(data.error);
             }
+
+
         } catch (error) {
             console.error(error);
         }

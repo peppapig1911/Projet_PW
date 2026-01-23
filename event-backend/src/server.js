@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require("cors");
+const eventController = require("./eventController");
 
 const app = express();
 app.use(express.json());
@@ -11,6 +12,8 @@ const { requireAuth } = require('./authMiddleware');
 app.post("/api/login", login);
 app.post("/api/signup", signup);
 app.get("/api/me", requireAuth, me);
+app.get("/api/events", eventController.getAllEvents);
+app.post("/api/events", requireAuth, eventController.createEvent);
 
 const PORT = 5143;
 app.listen(PORT, () =>{
