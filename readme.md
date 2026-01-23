@@ -14,7 +14,9 @@
 2. Make sure you have all the dependencies installed
 3. Modify Front-End Port if needed (default : 5173) in :
    event-backend/src/server.js (l.15)
-4. Save file
+4. Modify postgres password :
+   event-backend/db.js (l.7)
+6. Save file
 
 ## How to 
 
