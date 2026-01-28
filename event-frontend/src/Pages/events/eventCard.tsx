@@ -1,4 +1,4 @@
-import eventSubscription from "./eventSubscription.tsx";
+import { eventsubActions } from "../../API/eventsub-actions";
 
 interface Event {
     event_id: number;
@@ -16,11 +16,13 @@ interface EventCardProps {
 }
 
 export default function EventCard({ event, onStatusChange }: EventCardProps) {
-    const subscriptionService = eventSubscription();
 
     const handleRegister = async () => {
         try {
-            const updatedEvent = await subscriptionService.register(event.event_id);
+            const actions = await eventsubActions();
+            const updatedEvent = await actions.register(event.event_id);
+
+            // On force is_registered à true car le serveur ne le renvoie pas forcément dans l'objet event
             onStatusChange({ ...updatedEvent, is_registered: true });
         } catch (err) {
             alert("Erreur d'inscription");
@@ -29,7 +31,10 @@ export default function EventCard({ event, onStatusChange }: EventCardProps) {
 
     const handleUnregister = async () => {
         try {
-            const updatedEvent = await subscriptionService.unregister(event.event_id);
+            const actions = await eventsubActions();
+            const updatedEvent = await actions.unregister(event.event_id);
+
+            // On force is_registered à false
             onStatusChange({ ...updatedEvent, is_registered: false });
         } catch (err) {
             alert("Erreur de désinscription");

@@ -22,23 +22,41 @@ export default function EventHomePage() {
     const [eventDate, setEventDate] = useState("");
 
     useEffect(() => {
-        fetch("http://localhost:5143/api/events")
+        const rawToken = localStorage.getItem("token");
+        const savedToken = rawToken ? rawToken.replace(/^"|"$/g, '') : null;
+
+        // --- AJOUTE CE LOG ---
+        console.log("Token envoyé au chargement :", savedToken);
+
+        fetch("http://localhost:5143/api/events", {
+            method: "GET",
+            headers: {
+                // Assure-toi qu'il n'y a pas d'espace en trop ou de faute de frappe
+                "Authorization": savedToken ? `Bearer ${savedToken}` : ""
+            }
+        })
             .then(res => res.json())
-            .then(data => setEvents(data))
+            .then(data => {
+                // Si data est un tableau, on met à jour, sinon on initialise à vide
+                setEvents(Array.isArray(data) ? data : []);
+            })
             .catch(err => console.error("Erreur chargement events:", err));
     }, []);
 
-    // Fonction pour mettre à jour un event spécifique dans la liste
     const updateEventInList = (updatedEvent: Event) => {
         setEvents(prevEvents =>
-            prevEvents.map(e => e.event_id === updatedEvent.event_id ? updatedEvent : e)
+            prevEvents.map(e =>
+                e.event_id === updatedEvent.event_id
+                    ? { ...e, ...updatedEvent }
+                    : e
+            )
         );
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const rawToken = localStorage.getItem("token");
-        const savedToken = rawToken ? rawToken.trim().replace(/^"|"$/g, '') : null;
+        const savedToken = rawToken ? rawToken.replace(/^"|"$/g, '') : null;
 
         if (!savedToken) {
             alert("Session expirée. Veuillez vous reconnecter.");
@@ -52,7 +70,12 @@ export default function EventHomePage() {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${savedToken}`
                 },
-                body: JSON.stringify({ title, description, max_participants: maxParticipants, event_date: eventDate }),
+                body: JSON.stringify({
+                    title,
+                    description,
+                    max_participants: Number(maxParticipants),
+                    event_date: eventDate
+                }),
             });
 
             const data = await response.json();
@@ -79,13 +102,17 @@ export default function EventHomePage() {
             </header>
 
             <div className="events-grid">
-                {events.map((event) => (
-                    <EventCard
-                        key={event.event_id}
-                        event={event}
-                        onStatusChange={updateEventInList}
-                    />
-                ))}
+                {events.length > 0 ? (
+                    events.map((event) => (
+                        <EventCard
+                            key={event.event_id}
+                            event={event}
+                            onStatusChange={updateEventInList}
+                        />
+                    ))
+                ) : (
+                    <p>Aucun événement disponible pour le moment.</p>
+                )}
             </div>
 
             {isModalOpen && (

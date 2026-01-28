@@ -1,6 +1,4 @@
-const API_URL = "http://localhost:5143/api/events";
 
-// Fonction utilitaire pour le token (interne au fichier)
 const getAuthHeaders = () => {
     const rawToken = localStorage.getItem("token");
     const token = rawToken ? rawToken.trim().replace(/^"|"$/g, '') : null;
@@ -10,11 +8,10 @@ const getAuthHeaders = () => {
     };
 };
 
-// On exporte une fonction par défaut qui contient tes méthodes
-export default function eventSubscription() {
+export function eventsubActions() {
     return {
         register: async (eventId: number) => {
-            const response = await fetch(`${API_URL}/${eventId}/register`, {
+            const response = await fetch(`http://localhost:5143/api/events/${eventId}/register`, {
                 method: "POST",
                 headers: getAuthHeaders()
             });
@@ -23,7 +20,7 @@ export default function eventSubscription() {
         },
 
         unregister: async (eventId: number) => {
-            const response = await fetch(`${API_URL}/${eventId}/unregister`, {
+            const response = await fetch(`http://localhost:5143/api/events/${eventId}/unregister`, {
                 method: "DELETE",
                 headers: getAuthHeaders()
             });
