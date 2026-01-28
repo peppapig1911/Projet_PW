@@ -1,26 +1,26 @@
 import { useEffect, useState } from "react";
 import "./styles/EventsHomePage.scss";
+import eventSubscription from "./eventSubscription.tsx";
 
 interface Event {
     event_id: number;
     title: string;
     description: string;
-    nb_suscribers: number;
     max_participants: number;
     event_date: string;
+    nb_suscribers : number;
+    is_registered?: boolean;
 }
 
 export default function EventHomePage() {
     const [events, setEvents] = useState<Event[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // Déclaration des variables pour le formulaire
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [maxParticipants, setMaxParticipants] = useState("");
     const [eventDate, setEventDate] = useState("");
 
-    // Charger les événements au démarrage
     useEffect(() => {
         fetch("http://localhost:5143/api/events")
             .then(res => res.json())
@@ -31,8 +31,13 @@ export default function EventHomePage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Récupération du token
-        const savedToken = localStorage.getItem("token");
+        const rawToken = localStorage.getItem("token");
+        const savedToken = rawToken ? rawToken.trim().replace(/^"|"$/g, '') : null;
+
+        if (!savedToken) {
+            alert("Session expirée ou inexistante. Veuillez vous reconnecter.");
+            return;
+        }
 
         try {
             const response = await fetch("http://localhost:5143/api/events", {
@@ -50,13 +55,10 @@ export default function EventHomePage() {
             });
 
             const data = await response.json();
-            console.log("Statut HTTP :", response.status);
-            console.log("Réponse du serveur :", data);
 
             if (response.ok) {
                 setEvents([data, ...events]);
                 setIsModalOpen(false);
-                // Reset du formulaire
                 setTitle("");
                 setDescription("");
                 setEventDate("");
@@ -67,6 +69,26 @@ export default function EventHomePage() {
         } catch (error) {
             console.error("Erreur lors de l'appel API :", error);
             alert("Impossible de contacter le serveur.");
+        }
+    };
+
+    const subscriptionService = eventSubscription();
+
+    const handleRegister = async (id: number) => {
+        try {
+            const updatedEvent = await subscriptionService.register(id);
+            setEvents(events.map(e => e.event_id === id ? { ...updatedEvent, is_registered: true } : e));
+        } catch (err) {
+            alert("Erreur d'inscription");
+        }
+    };
+
+    const handleUnregister = async (id: number) => {
+        try {
+            const updatedEvent = await subscriptionService.unregister(id);
+            setEvents(events.map(e => e.event_id === id ? { ...updatedEvent, is_registered: false } : e));
+        } catch (err) {
+            alert("Erreur de désinscription");
         }
     };
 
@@ -91,7 +113,23 @@ export default function EventHomePage() {
                             <p>{event.description}</p>
                             <div className="event-footer">
                                 <span>{event.nb_suscribers} / {event.max_participants} inscrits</span>
-                                <button className="register-btn">S'inscrire</button>
+
+                                {event.is_registered ? (
+                                    <button
+                                        className="unregister-btn"
+                                        onClick={() => handleUnregister(event.event_id)}
+                                    >
+                                        Se désinscrire
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="register-btn"
+                                        onClick={() => handleRegister(event.event_id)}
+                                        disabled={event.nb_suscribers >= event.max_participants}
+                                    >
+                                        {event.nb_suscribers >= event.max_participants ? "Complet" : "S'inscrire"}
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -142,7 +180,6 @@ export default function EventHomePage() {
                             </div>
 
                             <div className="modal-actions">
-                                {/* type="button" est important ici pour ne pas envoyer le formulaire */}
                                 <button type="button" className="cancel-btn" onClick={() => setIsModalOpen(false)}>Annuler</button>
                                 <button type="submit" className="confirm-btn">Publier</button>
                             </div>

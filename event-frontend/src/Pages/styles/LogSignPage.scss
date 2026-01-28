@@ -98,25 +98,3 @@ body {
     }
   }
 }
-
-.success-message {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-
-  button {
-    background: none;
-    border: 1px solid #D64D8E;
-    color: #D64D8E;
-    padding: 0.5rem;
-    border-radius: 4px;
-    cursor: pointer;
-    outline: none;
-
-    &:hover {
-      background-color: #D64D8E;
-      color: white;
-    }
-  }
-}

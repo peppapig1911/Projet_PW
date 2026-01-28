@@ -55,7 +55,7 @@
       span { font-size: 0.85rem; color: #888; }
     }
 
-    .register-btn {
+    .register-btn, .unregister-btn {
       background-color: #D64D8E;
       color: white;
       border: none;
@@ -63,7 +63,17 @@
       border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
-      &:hover { background-color: #FBACBA; }
+      width: 100%;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #FBACBA;
+      }
+
+      &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
     }
   }
 }

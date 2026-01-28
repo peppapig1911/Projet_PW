@@ -19,7 +19,7 @@ exports.login = async (req, res) => {
             return res.status(401).json({error: "Invalid credentials"});
         }
 
-        const token = jwt.sign({id: user.id, username: user.username}, JWT_SECRET, {expiresIn: "1h"});
+        const token = jwt.sign({id: user.id, username: user.username}, JWT_SECRET, {expiresIn: "1d"});
 
         return res.json({token});
 
@@ -49,9 +49,6 @@ exports.signup = async (req, res) => {
         return res.status(201).json({message: "User created successfully"});
 
     } catch (error) {
-        console.log("--- DEBUG SIGNUP ERROR ---");
-        console.error(error);
-        console.log("--------------------------");
         return res.status(500).json({ error: "Server error" });
     }
 };
