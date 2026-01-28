@@ -1,9 +1,8 @@
 import { useState } from "react";
-import LoginPage from "./LoginPage";
-import SignupPage from "./SignupPage";
-import "./styles/LogSignPage.scss";
+import { LogsignForm, SignupPage } from "./logsignForm.tsx";
+import "../styles/LogSignPage.scss";
 
-export default function LogSignPage() {
+export default function LogsignPage() {
     const [activeTab, setActiveTab] = useState("login");
 
     return (
@@ -24,7 +23,7 @@ export default function LogSignPage() {
 
                 <div className="tabs-content">
                     {activeTab === "login" ? (
-                        <LoginPage />
+                        <LogsignForm />
                     ) : (
                         <SignupPage onSignupSuccess={() => setActiveTab("login")} />
                     )}

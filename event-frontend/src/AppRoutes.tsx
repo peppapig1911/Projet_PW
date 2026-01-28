@@ -1,10 +1,9 @@
 import {useMemo} from "react";
 import {Navigate,Route,Routes} from "react-router-dom"
 import type {User} from "./utils/types"
-import LoginPage from "./Pages/LoginPage.tsx"
-import SignupPage from "./Pages/SignupPage.tsx";
-import LogSignPage from "./Pages/LogSignPage.tsx";
-import EventHomePage from "./Pages/EventHomePages.tsx";
+import {LogsignForm, SignupPage} from "./Pages/logsign/logsignForm.tsx"
+import LogsignPage from "./Pages/logsign/logsignPage.tsx";
+import EventHomePage from "./Pages/homePage.tsx";
 
 type AppRoutesProps={
     user:User |null;
@@ -21,7 +20,7 @@ export default function AppRoutes({user,}:AppRoutesProps){
                        isAuthenticated ?(
                            <Navigate to="/eventshomepage" replace/>
                        ): (
-                           <LogSignPage/>
+                           <LogsignPage/>
                        )
                    }
             />
@@ -31,7 +30,7 @@ export default function AppRoutes({user,}:AppRoutesProps){
                        isAuthenticated ?(
                            <Navigate to="/eventshomepage" replace/>
                        ): (
-                            <LoginPage/>
+                            <LogsignForm/>
                        )
                    }
             />
