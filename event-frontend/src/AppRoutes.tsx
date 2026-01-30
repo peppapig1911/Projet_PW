@@ -4,6 +4,7 @@ import type {User} from "./utils/types"
 import {LogsignForm, SignupPage} from "./Pages/logsign/logsignForm.tsx"
 import LogsignPage from "./Pages/logsign/logsignPage.tsx";
 import EventHomePage from "./Pages/homePage.tsx";
+import EventDetailPage from "./Pages/events/detailPage.tsx";
 
 type AppRoutesProps={
     user:User |null;
@@ -52,6 +53,17 @@ export default function AppRoutes({user,}:AppRoutesProps){
                         <EventHomePage/>
                        )
                    }
+            />
+
+            <Route path="/event/:id"
+                element=
+                    {
+                        isAuthenticated ?(
+                            <Navigate to="/" replace/>
+                        ):(
+                        <EventDetailPage/>
+                        )
+                    }
             />
         </Routes>
     )

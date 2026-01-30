@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import "./styles/EventsHomePage.scss";
+import "./styles/homePage.scss";
 import EventCard from "./events/eventCard.tsx";
 
 interface Event {
     event_id: number;
+    owner_id: number;
     title: string;
     description: string;
     max_participants: number;
@@ -14,30 +15,36 @@ interface Event {
 
 export default function EventHomePage() {
     const [events, setEvents] = useState<Event[]>([]);
+    const [currentUserId, setCurrentUserId] = useState<number | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [maxParticipants, setMaxParticipants] = useState("");
     const [eventDate, setEventDate] = useState("");
+    const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
     useEffect(() => {
         const rawToken = localStorage.getItem("token");
         const savedToken = rawToken ? rawToken.replace(/^"|"$/g, '') : null;
 
-        // --- AJOUTE CE LOG ---
-        console.log("Token envoyé au chargement :", savedToken);
+        if (savedToken) {
+            try {
+                const payload = JSON.parse(atob(savedToken.split('.')[1]));
+                setCurrentUserId(payload.id);
+            } catch (e) {
+                console.error("Erreur décodage token", e);
+            }
+        }
 
         fetch("http://localhost:5143/api/events", {
             method: "GET",
             headers: {
-                // Assure-toi qu'il n'y a pas d'espace en trop ou de faute de frappe
                 "Authorization": savedToken ? `Bearer ${savedToken}` : ""
             }
         })
             .then(res => res.json())
             .then(data => {
-                // Si data est un tableau, on met à jour, sinon on initialise à vide
                 setEvents(Array.isArray(data) ? data : []);
             })
             .catch(err => console.error("Erreur chargement events:", err));
@@ -53,6 +60,28 @@ export default function EventHomePage() {
         );
     };
 
+    const removeEventFromList = (eventId: number) => {
+        setEvents(prevEvents => prevEvents.filter(e => e.event_id !== eventId));
+    };
+
+    const openEditModal = (event: Event) => {
+        setEditingEvent(event);
+        setTitle(event.title);
+        setDescription(event.description);
+        setMaxParticipants(event.max_participants.toString());
+        setEventDate(new Date(event.event_date).toISOString().split('T')[0]);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setEditingEvent(null);
+        setTitle("");
+        setDescription("");
+        setEventDate("");
+        setMaxParticipants("");
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const rawToken = localStorage.getItem("token");
@@ -63,9 +92,16 @@ export default function EventHomePage() {
             return;
         }
 
+        const isEditing = !!editingEvent;
+        const url = isEditing
+            ? `http://localhost:5143/api/events/${editingEvent?.event_id}`
+            : "http://localhost:5143/api/events";
+
+        const method = isEditing ? "PUT" : "POST";
+
         try {
-            const response = await fetch("http://localhost:5143/api/events", {
-                method: "POST",
+            const response = await fetch(url, {
+                method: method,
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${savedToken}`
@@ -79,12 +115,18 @@ export default function EventHomePage() {
             });
 
             const data = await response.json();
+
             if (response.ok) {
-                setEvents([data, ...events]);
-                setIsModalOpen(false);
-                setTitle(""); setDescription(""); setEventDate(""); setMaxParticipants("");
+                if (isEditing) {
+                    setEvents(prevEvents =>
+                        prevEvents.map(ev => ev.event_id === data.event_id ? { ...ev, ...data } : ev)
+                    );
+                } else {
+                    setEvents([data, ...events]);
+                }
+                closeModal();
             } else {
-                alert(`Erreur : ${data.error || "Problème lors de la création"}`);
+                alert(`Erreur : ${data.error || "Problème lors de l'opération"}`);
             }
         } catch (error) {
             alert("Impossible de contacter le serveur.");
@@ -107,7 +149,10 @@ export default function EventHomePage() {
                         <EventCard
                             key={event.event_id}
                             event={event}
+                            currentUserId={currentUserId}
                             onStatusChange={updateEventInList}
+                            onDelete={removeEventFromList}
+                            onEdit={openEditModal}
                         />
                     ))
                 ) : (
@@ -118,7 +163,7 @@ export default function EventHomePage() {
             {isModalOpen && (
                 <div className="modal-overlay">
                     <div className="modal-content">
-                        <h2>Nouvel Événement</h2>
+                        <h2>{editingEvent ? "Modifier l'événement" : "Nouvel Événement"}</h2>
                         <form onSubmit={handleSubmit}>
                             <div className="form-group">
                                 <label>Titre :</label>
@@ -137,8 +182,10 @@ export default function EventHomePage() {
                                 <input type="number" value={maxParticipants} onChange={e => setMaxParticipants(e.target.value)} />
                             </div>
                             <div className="modal-actions">
-                                <button type="button" className="cancel-btn" onClick={() => setIsModalOpen(false)}>Annuler</button>
-                                <button type="submit" className="confirm-btn">Publier</button>
+                                <button type="button" className="cancel-btn" onClick={closeModal}>Annuler</button>
+                                <button type="submit" className="confirm-btn">
+                                    {editingEvent ? "Enregistrer" : "Publier"}
+                                </button>
                             </div>
                         </form>
                     </div>
