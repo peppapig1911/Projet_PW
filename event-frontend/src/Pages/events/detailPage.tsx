@@ -9,7 +9,9 @@ export default function EventDetailPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem('token')?.replace(/"/g, '');
+        const rawToken = localStorage.getItem('token');
+        const token = rawToken ? rawToken.replace(/^"|"$/g, '') : null;
+
         fetch(`http://localhost:5143/api/events/${id}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
@@ -19,24 +21,23 @@ export default function EventDetailPage() {
     }, [id]);
 
     const handleSubscription = async () => {
-        const token = localStorage.getItem('token')?.replace(/"/g, '');
+        const rawToken = localStorage.getItem('token');
+        const token = rawToken ? rawToken.replace(/^"|"$/g, '') : null;
         try {
             const response = await fetch(`http://localhost:5143/api/events/${id}/toggle-subscribe`, {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
             });
             const data = await response.json();
+
             setEvent({
                 ...event,
                 is_user_subscribed: data.subscribed,
-                nb_suscribers: data.subscribed ? event.nb_suscribers + 1 : event.nb_suscribers - 1,
+                nb_suscribers: data.nb_suscribers,
                 participants_list: data.participants_list
             });
         } catch (err) {
-            console.error("Erreur lors de l'action:", err);
+            console.error("Erreur:", err);
         }
     };
 
@@ -47,13 +48,30 @@ export default function EventDetailPage() {
             <div className="content-wrapper">
                 <main className="main-column">
                     <nav className="breadcrumb-rose" onClick={() => navigate(-1)}>← Revenir aux événements</nav>
+
+                    {event.image_url && (
+                        <div className="detail-image-banner">
+                            <img src={event.image_url} alt={event.title} />
+                        </div>
+                    )}
+
                     <div className="event">
                         <span className="location-tag">Nantes</span>
                         <h1>{event.title}</h1>
+                        <p className="short-summary">{event.description}</p>
                     </div>
+
                     <div className="white-card-section">
-                        <h2>Détails de l'événement</h2>
-                        <p className="description-rose">{event.description}</p>
+                        <h2>Description de l'atelier</h2>
+                        <div className="description-rose">
+                            {event.full_description && event.full_description.trim() !== "" ? (
+                                event.full_description.split('\n').map((line: string, i: number) => (
+                                    <p key={i}>{line}</p>
+                                ))
+                            ) : (
+                                <p>Aucune description détaillée fournie.</p>
+                            )}
+                        </div>
                     </div>
                 </main>
 
@@ -61,12 +79,17 @@ export default function EventDetailPage() {
                     <div className="sticky-booking-rose">
                         <div className="availability-card">
                             <span className="label-rose">Disponibilités</span>
-                            <div className="places-left">{event.max_participants - event.nb_suscribers} places restantes</div>
+                            <div className="places-left">
+                                {event.max_participants - event.nb_suscribers} places restantes
+                            </div>
                             <button className="view-participants-link" onClick={() => setShowParticipants(true)}>
                                 Voir la liste des {event.nb_suscribers} participants
                             </button>
                         </div>
-                        <button className={`btn-action ${event.is_user_subscribed ? 'is-subscribed' : ''}`} onClick={handleSubscription}>
+                        <button
+                            className={`btn-action ${event.is_user_subscribed ? 'is-subscribed' : ''}`}
+                            onClick={handleSubscription}
+                        >
                             {event.is_user_subscribed ? "Se désinscrire" : "M'inscrire à l'atelier"}
                         </button>
                     </div>
@@ -80,7 +103,9 @@ export default function EventDetailPage() {
                         <h3>Participants ({event.nb_suscribers})</h3>
                         <ul className="participants-list">
                             {event.participants_list?.length > 0 ? (
-                                event.participants_list.map((u: string, i: number) => <li key={i} className="participant-item">🌸 {u}</li>)
+                                event.participants_list.map((u: string, i: number) => (
+                                    <li key={i} className="participant-item">🌸 {u}</li>
+                                ))
                             ) : (
                                 <li className="participant-item">Aucun inscrit pour le moment</li>
                             )}

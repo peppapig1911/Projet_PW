@@ -51,7 +51,7 @@
   padding: 2.5rem;
   border-radius: 15px;
   width: 90%;
-  max-width: 450px;
+  max-width: 550px; // Élargi pour accommoder la description complète
   box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 
   h2 { margin-top: 0; color: #333; margin-bottom: 1.5rem; }
@@ -59,7 +59,7 @@
   form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.2rem;
 
     .form-group {
       display: flex;
@@ -74,20 +74,37 @@
       }
     }
 
+
+    .form-row {
+      display: flex;
+      gap: 1rem;
+      width: 100%;
+
+      .form-group {
+        flex: 1;
+      }
+    }
+
     input, textarea {
-      background-color: white !important;
-      color: black !important;
+      background-color: white ;
+      color: black;
       padding: 0.8rem;
       border: 1px solid #ccc;
       border-radius: 8px;
       font-family: inherit;
       width: 100%;
       box-sizing: border-box;
+      resize: vertical;
 
       &:focus {
         outline: none;
         border-color: #D64D8E;
+        box-shadow: 0 0 0 2px rgba(214, 77, 142, 0.1);
       }
+    }
+
+    textarea {
+      min-height: 80px;
     }
 
     input[type="date"] {
@@ -98,26 +115,28 @@
       display: flex;
       justify-content: flex-end;
       gap: 1rem;
-      margin-top: 1rem;
+      margin-top: 0.5rem;
 
       button {
-        padding: 0.6rem 1.2rem;
-        border-radius: 6px;
+        padding: 0.7rem 1.4rem;
+        border-radius: 8px;
         cursor: pointer;
         border: none;
+        font-size: 0.95rem;
+        transition: background 0.2s;
       }
 
       .confirm-btn {
         background-color: #D64D8E;
         color: white;
         font-weight: bold;
-        &:hover { background-color: #FBACBA; }
+        &:hover { background-color: #A12B63; }
       }
 
       .cancel-btn {
-        background-color: #eee;
+        background-color: #f0f0f0;
         color: #666;
-        &:hover { background-color: #ddd; }
+        &:hover { background-color: #e2e2e2; }
       }
     }
   }

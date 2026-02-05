@@ -7,9 +7,11 @@ interface Event {
     owner_id: number;
     title: string;
     description: string;
+    full_description: string;
+    image_url: string;
     max_participants: number;
     event_date: string;
-    nb_suscribers : number;
+    nb_suscribers: number;
     is_registered?: boolean;
 }
 
@@ -20,6 +22,8 @@ export default function EventHomePage() {
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
+    const [fullDescription, setFullDescription] = useState("");
+    const [imageUrl, setImageUrl] = useState("");
     const [maxParticipants, setMaxParticipants] = useState("");
     const [eventDate, setEventDate] = useState("");
     const [editingEvent, setEditingEvent] = useState<Event | null>(null);
@@ -50,7 +54,8 @@ export default function EventHomePage() {
             .catch(err => console.error("Erreur chargement events:", err));
     }, []);
 
-    const updateEventInList = (updatedEvent: Event) => {
+
+    const updateEventInList = (updatedEvent: Partial<Event> & { event_id: number }) => {
         setEvents(prevEvents =>
             prevEvents.map(e =>
                 e.event_id === updatedEvent.event_id
@@ -68,6 +73,8 @@ export default function EventHomePage() {
         setEditingEvent(event);
         setTitle(event.title);
         setDescription(event.description);
+        setFullDescription(event.full_description || "");
+        setImageUrl(event.image_url || "");
         setMaxParticipants(event.max_participants.toString());
         setEventDate(new Date(event.event_date).toISOString().split('T')[0]);
         setIsModalOpen(true);
@@ -78,12 +85,20 @@ export default function EventHomePage() {
         setEditingEvent(null);
         setTitle("");
         setDescription("");
+        setFullDescription("");
+        setImageUrl("");
         setEventDate("");
         setMaxParticipants("");
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
+
         e.preventDefault();
+        console.log("BOUTON CLIQUÉ !");
+
+        console.log("Titre:", title);
+        console.log("Description complète:", fullDescription);
+        console.log("Image URL:", imageUrl);
         const rawToken = localStorage.getItem("token");
         const savedToken = rawToken ? rawToken.replace(/^"|"$/g, '') : null;
 
@@ -99,6 +114,15 @@ export default function EventHomePage() {
 
         const method = isEditing ? "PUT" : "POST";
 
+        const eventData = {
+            title: title,
+            description: description,
+            full_description: fullDescription,
+            image_url: imageUrl,
+            max_participants: Number(maxParticipants),
+            event_date: eventDate
+        };
+
         try {
             const response = await fetch(url, {
                 method: method,
@@ -106,12 +130,7 @@ export default function EventHomePage() {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${savedToken}`
                 },
-                body: JSON.stringify({
-                    title,
-                    description,
-                    max_participants: Number(maxParticipants),
-                    event_date: eventDate
-                }),
+                body: JSON.stringify(eventData),
             });
 
             const data = await response.json();
@@ -119,17 +138,18 @@ export default function EventHomePage() {
             if (response.ok) {
                 if (isEditing) {
                     setEvents(prevEvents =>
-                        prevEvents.map(ev => ev.event_id === data.event_id ? { ...ev, ...data } : ev)
+                        prevEvents.map(ev =>
+                            ev.event_id === data.event_id ? { ...ev, ...data } : ev
+                        )
                     );
                 } else {
-                    setEvents([data, ...events]);
+                    setEvents(prev => [data, ...prev]);
                 }
                 closeModal();
-            } else {
-                alert(`Erreur : ${data.error || "Problème lors de l'opération"}`);
             }
         } catch (error) {
-            alert("Impossible de contacter le serveur.");
+            console.error("Erreur Fetch:", error);
+            alert("Impossible de contacter le serveur. Vérifiez votre connexion.");
         }
     };
 
@@ -170,16 +190,26 @@ export default function EventHomePage() {
                                 <input value={title} onChange={e => setTitle(e.target.value)} required />
                             </div>
                             <div className="form-group">
-                                <label>Description :</label>
-                                <textarea value={description} onChange={e => setDescription(e.target.value)} />
+                                <label>URL Image :</label>
+                                <input value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://..." />
                             </div>
                             <div className="form-group">
-                                <label>Date :</label>
-                                <input type="date" value={eventDate} onChange={e => setEventDate(e.target.value)} required />
+                                <label>Résumé :</label>
+                                <input value={description} onChange={e => setDescription(e.target.value)} maxLength={100} />
                             </div>
                             <div className="form-group">
-                                <label>Participants max :</label>
-                                <input type="number" value={maxParticipants} onChange={e => setMaxParticipants(e.target.value)} />
+                                <label>Description complète :</label>
+                                <textarea value={fullDescription} onChange={e => setFullDescription(e.target.value)} rows={4} />
+                            </div>
+                            <div className="form-row" style={{ display: 'flex', gap: '10px' }}>
+                                <div className="form-group" style={{ flex: 1 }}>
+                                    <label>Date :</label>
+                                    <input type="date" value={eventDate} onChange={e => setEventDate(e.target.value)} required />
+                                </div>
+                                <div className="form-group" style={{ flex: 1 }}>
+                                    <label>Participants max :</label>
+                                    <input type="number" value={maxParticipants} onChange={e => setMaxParticipants(e.target.value)} />
+                                </div>
                             </div>
                             <div className="modal-actions">
                                 <button type="button" className="cancel-btn" onClick={closeModal}>Annuler</button>

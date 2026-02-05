@@ -1,4 +1,3 @@
-import { eventsubActions } from "../../API/eventsub-actions";
 import "../styles/eventCard.scss";
 import { Link } from "react-router-dom";
 
@@ -7,6 +6,8 @@ interface Event {
     owner_id: number;
     title: string;
     description: string;
+    full_description: string;
+    image_url: string;
     max_participants: number;
     event_date: string;
     nb_suscribers: number;
@@ -23,28 +24,46 @@ interface EventCardProps {
 
 export default function EventCard({ event, currentUserId, onStatusChange, onDelete, onEdit }: EventCardProps) {
 
-    const handleRegister = async () => {
+    const handleToggleSubscription = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const rawToken = localStorage.getItem("token");
+        const token = rawToken ? rawToken.replace(/^"|"$/g, '') : null;
+
+        if (!token) {
+            alert("Vous devez être connecté pour vous inscrire.");
+            return;
+        }
+
         try {
-            const actions = await eventsubActions();
-            const updatedEvent = await actions.register(event.event_id);
-            onStatusChange({ ...updatedEvent, is_registered: true });
+            const response = await fetch(`http://localhost:5143/api/events/${event.event_id}/toggle-subscribe`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error("Erreur réseau");
+
+            const data = await response.json();
+
+            onStatusChange({
+                ...event,
+                is_registered: data.subscribed,
+                nb_suscribers: data.nb_suscribers
+            });
         } catch (err) {
-            alert("Erreur d'inscription");
+            console.error("Erreur toggle:", err);
+            alert("Impossible de mettre à jour votre inscription.");
         }
     };
 
-    const handleUnregister = async () => {
-        try {
-            const actions = await eventsubActions();
-            const updatedEvent = await actions.unregister(event.event_id);
-            onStatusChange({ ...updatedEvent, is_registered: false });
-        } catch (err) {
-            alert("Erreur de désinscription");
-        }
-    };
-
-    const handleDelete = async () => {
+    const handleDelete = async (e: React.MouseEvent) => {
+        e.preventDefault();
         if (!window.confirm("Es-tu sûr de vouloir supprimer cet événement ?")) return;
+
         const rawToken = localStorage.getItem("token");
         const token = rawToken ? rawToken.replace(/^"|"$/g, '') : null;
 
@@ -53,11 +72,17 @@ export default function EventCard({ event, currentUserId, onStatusChange, onDele
                 method: "DELETE",
                 headers: { "Authorization": `Bearer ${token}` }
             });
-            if (response.ok) onDelete(event.event_id);
+            if (response.ok) {
+                onDelete(event.event_id);
+            } else {
+                alert("Erreur lors de la suppression");
+            }
         } catch (err) {
             alert("Impossible de joindre le serveur");
         }
     };
+
+    const isFull = event.nb_suscribers >= event.max_participants;
 
     return (
         <div className="event-card">
@@ -68,18 +93,41 @@ export default function EventCard({ event, currentUserId, onStatusChange, onDele
                 </div>
             )}
 
+            {event.image_url && (
+                <div className="event-image-container">
+                    <img src={event.image_url} alt={event.title} className="event-img" />
+                </div>
+            )}
+
             <div className="event-content">
                 <h3>{event.title}</h3>
                 <Link to={`/event/${event.event_id}`} className="detail-link">Afficher le détail</Link>
-                <p className="event-date-display">{event.event_date ? new Date(event.event_date).toLocaleDateString('fr-FR') : 'Date non définie'}</p>
-                <p>{event.description}</p>
+
+                <p className="event-date-display">
+                    {event.event_date ? new Date(event.event_date).toLocaleDateString('fr-FR') : 'Date non définie'}
+                </p>
+
+                <p className="event-description">{event.description}</p>
+
                 <div className="event-footer">
-                    <span>{event.nb_suscribers} / {event.max_participants} inscrits</span>
+                    <span className="subscriber-count">
+                        {event.nb_suscribers} / {event.max_participants} inscrits
+                    </span>
+
                     {event.is_registered ? (
-                        <button className="unregister-btn" onClick={handleUnregister}>Se désinscrire</button>
+                        <button
+                            className="unregister-btn"
+                            onClick={handleToggleSubscription}
+                        >
+                            Se désinscrire
+                        </button>
                     ) : (
-                        <button className="register-btn" onClick={handleRegister} disabled={event.nb_suscribers >= event.max_participants}>
-                            {event.nb_suscribers >= event.max_participants ? "Complet" : "S'inscrire"}
+                        <button
+                            className="register-btn"
+                            onClick={handleToggleSubscription}
+                            disabled={isFull}
+                        >
+                            {isFull ? "Complet" : "S'inscrire"}
                         </button>
                     )}
                 </div>
