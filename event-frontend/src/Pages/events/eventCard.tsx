@@ -95,7 +95,14 @@ export default function EventCard({ event, currentUserId, onStatusChange, onDele
 
             {event.image_url && (
                 <div className="event-image-container">
-                    <img src={event.image_url} alt={event.title} className="event-img" />
+                    <img
+                        src={event.image_url}
+                        alt={event.title}
+                        className="event-img"
+                        onError={(e) => {
+                            (e.target as HTMLImageElement).src = "https://picsum.photos/400/200?grayscale"; // Image de secours
+                        }}
+                    />
                 </div>
             )}
 

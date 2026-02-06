@@ -1,12 +1,19 @@
-import "../styles/LoginandSignupPage.scss"
-import { type FormEvent, useState } from "react"
+import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../styles/LoginandSignupPage.scss";
 
+interface LogsignFormProps {
+    setUser: (user: any) => void;
+}
 
-export function LogsignForm() {
+interface SignupPageProps {
+    onSignupSuccess: () => void;
+}
+
+export function LogsignForm({ setUser }: LogsignFormProps) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const navigate = useNavigate();
+    useNavigate();
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
@@ -17,17 +24,18 @@ export function LogsignForm() {
                 body: JSON.stringify({ username, password }),
             });
 
-            const data = await response.json(); // On récupère la donnée une seule fois
+            const data = await response.json();
 
             if (response.ok) {
-                // Stocker le token avant de naviguer
                 localStorage.setItem("token", data.token);
-                navigate("/eventshomepage");
+                setUser(data.user);
+                window.location.href = "/";
             } else {
                 alert(data.error || "Erreur lors de la connexion");
             }
         } catch (error) {
-            console.error(error);
+            console.error("Erreur technique lors du login:", error);
+            alert("Impossible de contacter le serveur.");
         }
     }
 
@@ -51,8 +59,8 @@ export function LogsignForm() {
     );
 }
 
-
-export function SignupPage({onSignupSuccess}: { onSignupSuccess?: () => void }) {
+// --- COMPOSANT SIGNUP ---
+export function SignupPage({ onSignupSuccess }: SignupPageProps) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [isRegistered, setIsRegistered] = useState(false);
@@ -73,15 +81,16 @@ export function SignupPage({onSignupSuccess}: { onSignupSuccess?: () => void }) 
                 alert(data.error || "Erreur lors de l'inscription");
             }
         } catch (error) {
-            console.error(error);
+            console.error("Erreur technique lors du signup:", error);
         }
     }
 
     if (isRegistered) {
         return (
             <div className="success-message">
-                <h2>Compte créé avec succès !</h2>
-                <button onClick={onSignupSuccess}>Se connecter maintenant</button>
+                <h2>✨ Compte créé avec succès !</h2>
+                <p>Tu peux maintenant te connecter.</p>
+                <button onClick={onSignupSuccess}>Aller à la connexion</button>
             </div>
         );
     }
@@ -89,13 +98,13 @@ export function SignupPage({onSignupSuccess}: { onSignupSuccess?: () => void }) 
     return (
         <form onSubmit={handleSubmit} className="auth-form">
             <input
-                placeholder="Nom d'utilisateur"
+                placeholder="Créer un nom d'utilisateur"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
             />
             <input
-                placeholder="Mot de passe"
+                placeholder="Créer un mot de passe"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

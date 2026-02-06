@@ -2,10 +2,13 @@
 
 ## Front-end
 • React
+
 • React Router
 ## Back-end
 • Node.js Express
+
 • API REST
+
 • Authentification JWT
 
 ## Configuration
@@ -24,3 +27,8 @@
 2. Open Terminal in event-backend and run command "node .\src\server.js"
 3. Open link and modify port if needed: http://localhost:5173/
 4. Sign up ! :)
+
+
+## Choix techniques 
+
+• Images url (certaines ne marchent pas)

@@ -1,13 +1,16 @@
-import type {LoginResponse, User} from "../utils/types.ts";
+import type { LoginResponse, User } from "../utils/types.ts";
 
-export async function login(username:string, password:string):Promise<string>{
-    const res = await fetch("/api/login",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({username, password}),
-    })
 
-    if(!res.ok){
+const API_BASE_URL = "http://localhost:5143";
+
+export async function login(username: string, password: string): Promise<string> {
+    const res = await fetch(`${API_BASE_URL}/api/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+    });
+
+    if (!res.ok) {
         throw new Error("Invalid credentials");
     }
     const data: LoginResponse = await res.json();
@@ -18,14 +21,15 @@ export async function login(username:string, password:string):Promise<string>{
 
 export async function validateToken(): Promise<User> {
     const token = localStorage.getItem("token");
+    if (!token) throw new Error("no token");
 
-    if (!token) {
-        throw new Error("no token");
-    }
+    const cleanToken = token.replace(/^"|"$/g, '');
 
-    const res = await fetch("/api/validate", {
+    const res = await fetch("http://localhost:5143/api/me", {
+        method: "GET", // Précise bien la méthode
         headers: {
-            Authorization: `Bearer ${token}`,
+            "Authorization": `Bearer ${cleanToken}`,
+            "Content-Type": "application/json"
         },
     });
 
@@ -33,5 +37,5 @@ export async function validateToken(): Promise<User> {
         throw new Error("Invalid token");
     }
 
-    return await res.json() as Promise<User>;
+    return await res.json();
 }

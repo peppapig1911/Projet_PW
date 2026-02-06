@@ -1,70 +1,57 @@
-import {useMemo} from "react";
-import {Navigate,Route,Routes} from "react-router-dom"
-import type {User} from "./utils/types"
-import {LogsignForm, SignupPage} from "./Pages/logsign/logsignForm.tsx"
-import LogsignPage from "./Pages/logsign/logsignPage.tsx";
+import { useMemo } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
+import type { User } from "./utils/types";
 import EventHomePage from "./Pages/homePage.tsx";
 import EventDetailPage from "./Pages/events/detailPage.tsx";
+import LogsignPage from "./Pages/logsign/logsignPage.tsx";
+import ProfilePage from "./Pages/profilePage.tsx";
 
-type AppRoutesProps={
-    user:User |null;
+type AppRoutesProps = {
+    user: User | null;
+    setUser: (user: User | null) => void;
 };
 
-export default function AppRoutes({user,}:AppRoutesProps){
+export default function AppRoutes({ user, setUser }: AppRoutesProps) {
     const token = localStorage.getItem("token");
-    const isAuthenticated = useMemo(()=>Boolean(token && user),[token,user])
+    const isAuthenticated = useMemo(() => Boolean(token && user), [token, user]);
 
-    return(
+    return (
         <Routes>
-            <Route path="/"
-                   element={
-                       isAuthenticated ?(
-                           <Navigate to="/eventshomepage" replace/>
-                       ): (
-                           <LogsignPage/>
-                       )
-                   }
+            <Route
+                path="/"
+                element={<EventHomePage user={user} />}
             />
 
-            <Route path="/login"
-                   element={
-                       isAuthenticated ?(
-                           <Navigate to="/eventshomepage" replace/>
-                       ): (
-                            <LogsignForm/>
-                       )
-                   }
-            />
-            <Route path="/signup"
-                   element={
-                       isAuthenticated ?(
-                           <Navigate to="/eventshomepage" replace/>
-                       ): (
-                           <SignupPage/>
-                       )
-                   }
-            />
-            <Route path="/eventshomepage"
-                element=
-                   {
-                       isAuthenticated ?(
-                           <Navigate to="/" replace/>
-                    ):(
-                        <EventHomePage/>
-                       )
-                   }
+            <Route
+                path="/login"
+                element={
+                    isAuthenticated ? (
+                        <Navigate to="/" replace />
+                    ) : (
+                        <LogsignPage setUser={setUser} />
+                    )
+                }
             />
 
-            <Route path="/event/:id"
-                element=
-                    {
-                        isAuthenticated ?(
-                            <Navigate to="/" replace/>
-                        ):(
-                        <EventDetailPage/>
-                        )
-                    }
+            <Route
+                path="/signup"
+                element={
+                    isAuthenticated ? (
+                        <Navigate to="/" replace />
+                    ) : (
+                        <LogsignPage setUser={setUser} />
+                    )
+                }
             />
+
+            <Route path="/event/:id" element={<EventDetailPage />} />
+
+            <Route
+                path="/profile"
+                element={user ? <ProfilePage user={user} /> : <Navigate to="/login" />}
+            />
+
+            <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-    )
+    );
 }
