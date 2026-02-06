@@ -12,6 +12,7 @@ export default function EventModal({ isOpen, onClose, onSubmit, initialData }: E
     const [description, setDescription] = useState("");
     const [fullDescription, setFullDescription] = useState("");
     const [imageUrl, setImageUrl] = useState("");
+    const [location, setLocation] = useState("");
     const [maxParticipants, setMaxParticipants] = useState("");
     const [eventDate, setEventDate] = useState("");
 
@@ -21,10 +22,17 @@ export default function EventModal({ isOpen, onClose, onSubmit, initialData }: E
             setDescription(initialData.description || "");
             setFullDescription(initialData.full_description || "");
             setImageUrl(initialData.image_url || "");
+            setLocation(initialData.location || "");
             setMaxParticipants(initialData.max_participants?.toString() || "");
             setEventDate(initialData.event_date ? new Date(initialData.event_date).toISOString().split('T')[0] : "");
         } else {
-            setTitle(""); setDescription(""); setFullDescription(""); setImageUrl(""); setMaxParticipants(""); setEventDate("");
+            setTitle("");
+            setDescription("");
+            setFullDescription("");
+            setImageUrl("");
+            setLocation("");
+            setMaxParticipants("");
+            setEventDate("");
         }
     }, [initialData, isOpen]);
 
@@ -37,6 +45,7 @@ export default function EventModal({ isOpen, onClose, onSubmit, initialData }: E
             description,
             full_description: fullDescription,
             image_url: imageUrl,
+            location,
             max_participants: Number(maxParticipants),
             event_date: eventDate
         });
@@ -52,8 +61,12 @@ export default function EventModal({ isOpen, onClose, onSubmit, initialData }: E
                         <input value={title} onChange={e => setTitle(e.target.value)} required />
                     </div>
                     <div className="form-group">
+                        <label>Lieu :</label>
+                        <input value={location} onChange={e => setLocation(e.target.value)} required />
+                    </div>
+                    <div className="form-group">
                         <label>URL Image :</label>
-                        <input value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://..." />
+                        <input value={imageUrl} onChange={e => setImageUrl(e.target.value)} />
                     </div>
                     <div className="form-group">
                         <label>Résumé :</label>

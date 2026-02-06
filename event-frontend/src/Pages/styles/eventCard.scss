@@ -1,7 +1,6 @@
 .event-card {
   position: relative;
   background-color: white;
-  border: 1px solid #ddd;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -10,6 +9,7 @@
   width: 100%;
   transition: transform 0.2s ease;
   overflow: hidden;
+  border: 1px solid #eee;
 
   &:hover {
     transform: translateY(-5px);
@@ -17,105 +17,132 @@
 
   .admin-actions {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 10px;
+    right: 10px;
     display: flex;
-    align-items: center;
-    gap: 10px;
-    z-index: 10;
+    gap: 8px;
+    z-index: 5;
 
     button {
-      background: rgba(255, 255, 255, 0.9);
-      border: 1px solid #eee;
+      background: white;
+      border: none;
       border-radius: 50%;
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s;
-      padding: 0;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      font-size: 14px;
 
-      &:hover {
-        background: white;
-        transform: scale(1.1);
-      }
+      &:hover { transform: scale(1.1); }
     }
-
-    .edit-btn { color: #4a90e2; font-size: 16px; }
-    .delete-icon { color: #ff4d4d; font-size: 20px; font-weight: bold; }
+    .delete-icon { color: #ff4d4d; font-weight: bold; font-size: 18px; }
   }
 
   .event-image-container {
     width: 100%;
     height: 180px;
-    background-color: #f9f9f9;
+    overflow: hidden;
+    background-color: #f0f0f0;
 
     .event-img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      display: block;
     }
   }
 
   .event-content {
-    padding: 1.5rem;
+    padding: 1.2rem;
     display: flex;
     flex-direction: column;
     flex: 1;
     text-align: center;
 
-    h3 { margin: 0 0 0.5rem; color: #333; font-size: 1.4rem; font-weight: bold; }
+    .event-title {
+      margin: 0 0 0.4rem;
+      color: #333;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
 
     .detail-link {
-      display: inline-block;
-      margin-bottom: 1rem;
       color: #D64D8E;
       text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 500;
+      font-size: 0.85rem;
+      margin-bottom: 0.8rem;
+      font-weight: 600;
+      display: inline-block;
       &:hover { text-decoration: underline; }
     }
 
-    .event-date-display { color: #888; font-size: 0.85rem; margin-bottom: 1rem; }
+    .event-info-row {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      color: #777;
+
+      .event-location-display {
+        color: #D64D8E;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        .pin-icon {
+          /* L'emoji garde sa couleur mais on peut lui donner un éclat */
+          filter: drop-shadow(0 0 1px rgba(214, 77, 142, 0.5));
+        }
+      }
+
+      .event-date-display {
+        color: #888;
+      }
+    }
 
     .event-description {
+      font-size: 0.9rem;
       color: #555;
-      line-height: 1.5;
+      margin-bottom: 1.2rem;
       flex-grow: 1;
-      margin-bottom: 1.5rem;
-      font-size: 0.95rem;
     }
 
     .event-footer {
-      margin-top: auto;
       display: flex;
       flex-direction: column;
-      gap: 0.8rem;
+      gap: 0.6rem;
 
-      span { font-size: 0.85rem; color: #999; }
+      .subscriber-count {
+        font-size: 0.8rem;
+        color: #999;
+      }
 
       .register-btn, .unregister-btn {
-        background-color: #D64D8E;
-        color: white;
+        width: 100%;
+        padding: 0.7rem;
+        border-radius: 8px;
         border: none;
-        padding: 0.8rem;
-        border-radius: 10px;
         font-weight: bold;
         cursor: pointer;
-        width: 100%;
-        transition: background 0.2s;
+        transition: 0.2s;
+        color: white;
+      }
 
-        &:hover { background-color: #FBACBA; }
-        &:disabled { background-color: #ccc; cursor: not-allowed; }
+      .register-btn {
+        background-color: #D64D8E;
+        &:hover { background-color: #A12B63; }
+        &:disabled { background-color: #ccc; }
       }
 
       .unregister-btn {
-        background-color: #A12B63;
-        &:hover { background-color: #8a2454; }
+        background-color: #8a2454;
+        &:hover { background-color: #6d1d43; }
       }
     }
   }

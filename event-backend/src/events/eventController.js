@@ -1,44 +1,41 @@
 const pool = require("../../db");
 
 exports.createEvent = async (req, res) => {
-    console.log("CREATE EVENT CALLED");
-    console.log("Body reçu :", req.body);
-
     try {
-        const { title, description, full_description, image_url, max_participants, event_date } = req.body;
+        const { title, description, full_description, image_url, location, max_participants, event_date } = req.body;
         const owner_id = req.user.id;
 
         const query = `
             INSERT INTO event (
                 title,
                 description,
-                "full_description",
-                "image_url",
+                full_description,
+                image_url,
+                location,
                 owner_id,
                 max_participants,
                 event_date,
                 nb_suscribers
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, 0)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 0)
             RETURNING *`;
 
         const values = [
-            title,             // $1
-            description,       // $2
-            full_description,  // $3
-            image_url,         // $4
-            owner_id,          // $5
-            max_participants,  // $6
-            event_date         // $7
+            title,
+            description,
+            full_description || null,
+            image_url || null,
+            location || null,
+            owner_id,
+            max_participants,
+            event_date
         ];
 
         const result = await pool.query(query, values);
-
-        console.log("Données enregistrées en DB :", result.rows[0]);
         res.status(201).json(result.rows[0]);
     } catch (error) {
-        console.error("ERREUR SQL LORS DE LA CRÉATION :", error);
-        res.status(500).json({ error: "Erreur lors de la création", details: error.message });
+        console.error(error);
+        res.status(500).json({ error: "Erreur lors de la création" });
     }
 };
 
@@ -60,40 +57,35 @@ exports.deleteEvent = async (req, res) => {
 };
 
 exports.updateEvent = async (req, res) => {
-    console.log("UPDATE EVENT CALLED");
-    console.log("ID concerné :", req.params.id);
-    console.log("Body reçu pour update :", req.body);
-
-    const { id } = req.params;
-    const { title, description, full_description, image_url, max_participants, event_date } = req.body;
-    const userId = req.user.id;
-
     try {
+        const { id } = req.params;
+        const { title, description, full_description, image_url, location, max_participants, event_date } = req.body;
+        const userId = req.user.id;
+
         const result = await pool.query(
             `UPDATE event
              SET title = $1,
                  description = $2,
                  full_description = $3,
                  image_url = $4,
-                 max_participants = $5,
-                 event_date = $6
-             WHERE event_id = $7 AND owner_id = $8
+                 location = $5,
+                 max_participants = $6,
+                 event_date = $7
+             WHERE event_id = $8 AND owner_id = $9
              RETURNING *`,
-            [title, description, full_description, image_url, max_participants, event_date, id, userId]
+            [title, description, full_description, image_url, location, max_participants, event_date, id, userId]
         );
 
         if (result.rows.length === 0) {
             return res.status(403).json({ error: "Non autorisé ou événement inexistant" });
         }
 
-        console.log("Données mises à jour en DB :", result.rows[0]);
         res.json(result.rows[0]);
     } catch (error) {
-        console.error("ERREUR SQL UPDATE :", error);
-        res.status(500).json({ error: "Erreur serveur lors de la mise à jour", details: error.message });
+        console.error(error);
+        res.status(500).json({ error: "Erreur serveur lors de la mise à jour" });
     }
 };
-
 
 exports.getAllEvents = async (req, res) => {
     try {
