@@ -1,6 +1,8 @@
 const pool = require("../../db");
 
 exports.createEvent = async (req, res) => {
+    console.log("--- DEBUG BACKEND ---");
+    console.log("Body reçu :", req.body); // On vérifie si 'location' est là
     try {
         const { title, description, full_description, image_url, location, max_participants, event_date } = req.body;
         const owner_id = req.user.id;
@@ -57,6 +59,8 @@ exports.deleteEvent = async (req, res) => {
 };
 
 exports.updateEvent = async (req, res) => {
+    console.log("--- DEBUG BACKEND ---");
+    console.log("Body reçu :", req.body); // On vérifie si 'location' est là
     try {
         const { id } = req.params;
         const { title, description, full_description, image_url, location, max_participants, event_date } = req.body;
