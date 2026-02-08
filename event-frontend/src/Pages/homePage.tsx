@@ -9,7 +9,7 @@ export default function EventHomePage({ user }: any) {
     const [editingEvent, setEditingEvent] = useState<any | null>(null);
 
     const fetchEvents = () => {
-        const token = localStorage.getItem("token")?.replace(/^"|"$/g, '');
+        const token = localStorage.getItem("token")?.replace(/['"]+/g, '');
         fetch("http://localhost:5143/api/events", {
             headers: { "Authorization": token ? `Bearer ${token}` : "" }
         })
@@ -17,8 +17,25 @@ export default function EventHomePage({ user }: any) {
             .then(data => setEvents(Array.isArray(data) ? data : []));
     };
 
-    useEffect(() => { fetchEvents(); }, [user]);
+    // NOUVELLE FONCTION DE SUPPRESSION
+    const handleDelete = async (eventId: number) => {
+        if (!window.confirm("Supprimer cet événement ?")) return;
 
+        const token = localStorage.getItem("token")?.replace(/['"]+/g, '');
+        try {
+            const res = await fetch(`http://localhost:5143/api/events/${eventId}`, {
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (res.ok) {
+                fetchEvents();
+            } else {
+                alert("Erreur lors de la suppression");
+            }
+        } catch (err) { console.error(err); }
+    };
+
+    useEffect(() => { fetchEvents(); }, [user]);
     const handleModalSubmit = async (eventData: any) => {
         const token = localStorage.getItem("token")?.replace(/^"|"$/g, '');
         const isEditing = !!editingEvent;
@@ -50,7 +67,7 @@ export default function EventHomePage({ user }: any) {
                         event={event}
                         currentUserId={user ? Number(user.id) : null}
                         onStatusChange={fetchEvents}
-                        onDelete={fetchEvents}
+                        onDelete={handleDelete}
                         onEdit={(ev: any) => { setEditingEvent(ev); setIsModalOpen(true); }}
                     />
                 ))}
