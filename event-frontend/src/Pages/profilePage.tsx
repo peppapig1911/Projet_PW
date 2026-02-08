@@ -21,7 +21,6 @@ export default function ProfilePage({ user }: any) {
             const data: any[] = await res.json();
 
             if (Array.isArray(data)) {
-                // Filtrer les événements créés par l'utilisateur
                 setMyEvents(data.filter(e => String(e.owner_id) === String(user.id)));
                 setJoinedEvents(data.filter(e => e.is_user_subscribed === true));
             }
@@ -44,10 +43,14 @@ export default function ProfilePage({ user }: any) {
             if (res.ok) {
                 fetchUserData();
             }
-        } catch (error) { console.error(error); }
+        } catch (error) {
+            console.error(error);
+        }
     };
 
-    useEffect(() => { fetchUserData(); }, [user]);
+    useEffect(() => {
+        fetchUserData();
+    }, [user]);
 
     const handleModalSubmit = async (eventData: any) => {
         const token = localStorage.getItem("token")?.replace(/['"]+/g, '');
@@ -88,7 +91,7 @@ export default function ProfilePage({ user }: any) {
                                     event={event}
                                     currentUserId={Number(user.id)}
                                     onStatusChange={fetchUserData}
-                                    onDelete={fetchUserData}
+                                    onDelete={handleDelete}
                                     onEdit={(ev: any) => { setEditingEvent(ev); setIsModalOpen(true); }}
                                 />
                             ))
