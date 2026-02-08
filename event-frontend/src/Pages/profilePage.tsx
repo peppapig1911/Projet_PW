@@ -23,8 +23,6 @@ export default function ProfilePage({ user }: any) {
             if (Array.isArray(data)) {
                 // Filtrer les événements créés par l'utilisateur
                 setMyEvents(data.filter(e => String(e.owner_id) === String(user.id)));
-
-                // CORRECTION : On utilise la clé 'is_user_subscribed' qui vient du Backend
                 setJoinedEvents(data.filter(e => e.is_user_subscribed === true));
             }
         } catch (error) {

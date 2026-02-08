@@ -14,7 +14,6 @@ export default function EventDetailPage() {
 
         fetch(`http://localhost:5143/api/events/${id}`, {
             headers: {
-                // Si le token est mal nettoyé, le backend ne remplit pas req.user
                 'Authorization': (token && token !== "null") ? `Bearer ${token}` : ""
             }
         })
