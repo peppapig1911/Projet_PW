@@ -66,4 +66,4 @@ Ce projet consiste à développer une application web full stack.
 
 * Ajouter des notifications pour confirmer le succès des inscriptions/suppressions.
 * Implémenter une barre de recherche et des filtres par catégorie ou par ville.
-* **Performance :** Mettre en place la pagination 
+* Mettre en place la pagination 
