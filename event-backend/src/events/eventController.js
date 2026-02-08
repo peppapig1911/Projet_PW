@@ -1,8 +1,6 @@
 const pool = require("../../db");
 
 exports.createEvent = async (req, res) => {
-    console.log("--- DEBUG BACKEND ---");
-    console.log("Body reçu :", req.body); // On vérifie si 'location' est là
     try {
         const { title, description, full_description, image_url, location, max_participants, event_date } = req.body;
         const owner_id = req.user.id;
@@ -49,18 +47,15 @@ exports.deleteEvent = async (req, res) => {
         const query = `DELETE FROM event WHERE event_id = $1 AND owner_id = $2 RETURNING *`;
         const result = await pool.query(query, [id, userId]);
         if (result.rowCount === 0) {
-            return res.status(403).json({ error: "Non autorisé ou événement inexistant." });
+            return res.status(403).json({ error: "Non autorisé" });
         }
-        res.status(200).json({ message: "Événement supprimé", event: result.rows[0] });
+        res.status(200).json({ message: "Événement supprimé" });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Erreur serveur lors de la suppression" });
+        res.status(500).json({ error: "Erreur serveur" });
     }
 };
 
 exports.updateEvent = async (req, res) => {
-    console.log("--- DEBUG BACKEND ---");
-    console.log("Body reçu :", req.body); // On vérifie si 'location' est là
     try {
         const { id } = req.params;
         const { title, description, full_description, image_url, location, max_participants, event_date } = req.body;
@@ -81,13 +76,12 @@ exports.updateEvent = async (req, res) => {
         );
 
         if (result.rows.length === 0) {
-            return res.status(403).json({ error: "Non autorisé ou événement inexistant" });
+            return res.status(403).json({ error: "Non autorisé" });
         }
 
         res.json(result.rows[0]);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Erreur serveur lors de la mise à jour" });
+        res.status(500).json({ error: "Erreur serveur" });
     }
 };
 
@@ -97,14 +91,13 @@ exports.getAllEvents = async (req, res) => {
         const query = `
             SELECT e.*,
                    (SELECT COUNT(*) FROM event_subscriptions WHERE event_id = e.event_id) as nb_suscribers,
-                   EXISTS(SELECT 1 FROM event_subscriptions WHERE event_id = e.event_id AND user_id = $1) AS is_registered
+                   EXISTS(SELECT 1 FROM event_subscriptions WHERE event_id = e.event_id AND user_id = $1) AS is_user_subscribed
             FROM event e
             ORDER BY e.event_id DESC
         `;
         const result = await pool.query(query, [userId]);
         res.json(result.rows);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ error: "Erreur serveur" });
     }
 };
@@ -130,7 +123,7 @@ exports.getEventById = async (req, res) => {
         `;
 
         const result = await pool.query(query, [id, userId]);
-        if (result.rows.length === 0) return res.status(404).json({ error: "Événement introuvable" });
+        if (result.rows.length === 0) return res.status(404).json({ error: "Introuvable" });
         res.json(result.rows[0]);
     } catch (error) {
         res.status(500).json({ error: "Erreur serveur" });
@@ -149,8 +142,12 @@ exports.toggleSubscription = async (req, res) => {
 
         if (check.rows.length > 0) {
             await pool.query("DELETE FROM event_subscriptions WHERE event_id = $1 AND user_id = $2", [id, userId]);
+            // Décrémenter le compteur
+            await pool.query("UPDATE event SET nb_suscribers = nb_suscribers - 1 WHERE event_id = $1", [id]);
         } else {
             await pool.query("INSERT INTO event_subscriptions (event_id, user_id) VALUES ($1, $2)", [id, userId]);
+            // Incrémenter le compteur
+            await pool.query("UPDATE event SET nb_suscribers = nb_suscribers + 1 WHERE event_id = $1", [id]);
         }
 
         const countRes = await pool.query("SELECT COUNT(*) FROM event_subscriptions WHERE event_id = $1", [id]);
@@ -166,7 +163,6 @@ exports.toggleSubscription = async (req, res) => {
             participants_list: listRes.rows.map(r => r.username)
         });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ error: "Erreur serveur" });
     }
 };

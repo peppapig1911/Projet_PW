@@ -20,7 +20,7 @@ app.delete("/api/events/:id/unregister", requireAuth, eventSubscription.unregist
 app.delete("/api/events/:id", requireAuth, eventController.deleteEvent);
 app.put("/api/events/:id", requireAuth, eventController.updateEvent);
 app.post("/api/events/:id/toggle-subscribe", requireAuth, eventController.toggleSubscription);
-app.get("/api/events/:id", eventController.getEventById);
+app.get("/api/events/:id", checkUser, eventController.getEventById);
 
 
 const PORT = 5143;

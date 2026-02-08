@@ -8,46 +8,61 @@ export default function EventDetailPage() {
     const [showParticipants, setShowParticipants] = useState(false);
     const navigate = useNavigate();
 
-    useEffect(() => {
+    const loadEventData = () => {
         const rawToken = localStorage.getItem('token');
-        const token = rawToken ? rawToken.replace(/^"|"$/g, '') : null;
+        const token = rawToken ? rawToken.replace(/['"]+/g, '') : null;
 
         fetch(`http://localhost:5143/api/events/${id}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: {
+                // Si le token est mal nettoyé, le backend ne remplit pas req.user
+                'Authorization': (token && token !== "null") ? `Bearer ${token}` : ""
+            }
         })
             .then(res => res.json())
-            .then(data => setEvent(data))
-            .catch(err => console.error("Erreur detail:", err));
+            .then(data => {
+                console.log("Donnée reçue :", data.is_user_subscribed);
+                setEvent(data);
+            })
+            .catch(err => console.error(err));
+    };
+
+    useEffect(() => {
+        loadEventData();
     }, [id]);
 
     const handleSubscription = async () => {
         const rawToken = localStorage.getItem('token');
-        const token = rawToken ? rawToken.replace(/^"|"$/g, '') : null;
+        const token = rawToken ? rawToken.replace(/['"]+/g, '') : null;
+        if (!token) return;
+
         try {
             const response = await fetch(`http://localhost:5143/api/events/${id}/toggle-subscribe`, {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
             });
             const data = await response.json();
 
             setEvent({
                 ...event,
-                is_user_subscribed: data.subscribed,
+                is_user_subscribed: data.subscribed, // Synchronise bouton
                 nb_suscribers: data.nb_suscribers,
                 participants_list: data.participants_list
             });
         } catch (err) {
-            console.error("Erreur:", err);
+            console.error(err);
         }
     };
 
-    if (!event) return <div className="loading-rose">Chargement de votre événement...</div>;
+    if (!event) return <div className="loading-rose">Chargement...</div>;
 
     return (
         <div className="layout">
             <div className="content-wrapper">
                 <main className="main-column">
-                    <nav className="breadcrumb-rose" onClick={() => navigate(-1)}>← Revenir aux événements</nav>
+                    <nav className="breadcrumb-rose" onClick={() => navigate(-1)}>← Retour</nav>
 
                     {event.image_url && (
                         <div className="detail-image-banner">
@@ -56,7 +71,7 @@ export default function EventDetailPage() {
                     )}
 
                     <div className="event">
-                        <span className="location-tag">Nantes</span>
+                        <span className="location-tag">📍 {event.location || "Lieu à venir"}</span>
                         <h1>{event.title}</h1>
                         <p className="short-summary">{event.description}</p>
                     </div>
@@ -64,12 +79,12 @@ export default function EventDetailPage() {
                     <div className="white-card-section">
                         <h2>Description de l'atelier</h2>
                         <div className="description-rose">
-                            {event.full_description && event.full_description.trim() !== "" ? (
+                            {event.full_description ? (
                                 event.full_description.split('\n').map((line: string, i: number) => (
                                     <p key={i}>{line}</p>
                                 ))
                             ) : (
-                                <p>Aucune description détaillée fournie.</p>
+                                <p>Aucune description fournie.</p>
                             )}
                         </div>
                     </div>
@@ -83,9 +98,10 @@ export default function EventDetailPage() {
                                 {event.max_participants - event.nb_suscribers} places restantes
                             </div>
                             <button className="view-participants-link" onClick={() => setShowParticipants(true)}>
-                                Voir la liste des {event.nb_suscribers} participants
+                                Voir les {event.nb_suscribers} participants
                             </button>
                         </div>
+
                         <button
                             className={`btn-action ${event.is_user_subscribed ? 'is-subscribed' : ''}`}
                             onClick={handleSubscription}
@@ -102,13 +118,9 @@ export default function EventDetailPage() {
                         <button className="close-modal" onClick={() => setShowParticipants(false)}>×</button>
                         <h3>Participants ({event.nb_suscribers})</h3>
                         <ul className="participants-list">
-                            {event.participants_list?.length > 0 ? (
-                                event.participants_list.map((u: string, i: number) => (
-                                    <li key={i} className="participant-item">🌸 {u}</li>
-                                ))
-                            ) : (
-                                <li className="participant-item">Aucun inscrit pour le moment</li>
-                            )}
+                            {event.participants_list?.map((u: string, i: number) => (
+                                <li key={i} className="participant-item">🌸 {u}</li>
+                            ))}
                         </ul>
                     </div>
                 </div>

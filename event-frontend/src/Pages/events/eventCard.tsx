@@ -12,8 +12,9 @@ export default function EventCard({ event, currentUserId, onStatusChange, onDele
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
             });
-            const data = await res.json();
-            onStatusChange({ ...event, is_registered: data.subscribed, nb_suscribers: data.nb_suscribers });
+            if (res.ok) {
+                onStatusChange();
+            }
         } catch (err) { console.error(err); }
     };
 
@@ -57,11 +58,11 @@ export default function EventCard({ event, currentUserId, onStatusChange, onDele
                 <div className="event-footer">
                     <span className="subscriber-count">{event.nb_suscribers} / {event.max_participants} inscrits</span>
                     <button
-                        className={event.is_registered ? "unregister-btn" : "register-btn"}
+                        className={event.is_user_subscribed ? "unregister-btn" : "register-btn"}
                         onClick={handleToggleSubscription}
-                        disabled={!event.is_registered && isFull}
+                        disabled={!event.is_user_subscribed && isFull}
                     >
-                        {event.is_registered ? "Se désinscrire" : (isFull ? "Complet" : "S'inscrire")}
+                        {event.is_user_subscribed ? "Se désinscrire" : (isFull ? "Complet" : "S'inscrire")}
                     </button>
                 </div>
             </div>

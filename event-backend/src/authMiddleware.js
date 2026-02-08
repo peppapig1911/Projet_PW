@@ -23,15 +23,23 @@ exports.requireAuth = (req, res, next) => {
 
 exports.checkUser = (req, res, next) => {
     const authHeader = req.headers.authorization;
+
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        console.log("CHECKUSER: Pas de token trouvé");
+        req.user = null;
         return next();
     }
-    const token = authHeader.split(" ")[1];
+
+    const token = authHeader.split(" ")[1].replace(/['"]+/g, '');
+
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        req.user = decoded; // On identifie l'utilisateur pour le SQL
+        console.log("CHECKUSER: Utilisateur identifié ID =", decoded.id);
+        req.user = decoded;
         next();
     } catch (error) {
+        console.log("CHECKUSER: Erreur de token ->", error.message);
+        req.user = null;
         next();
     }
 };
