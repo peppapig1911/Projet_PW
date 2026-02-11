@@ -41,7 +41,8 @@ Ce projet consiste à développer une application web full stack.
    * Copy-Paste all the tables written in the `tables.txt` file to create the tables
 
 * Create Data Source -> PostgreSQL
-* On database_web choose "All schemas"
+* On database_web choose "public schemas"
+* In *serve.js* : modify postgres password and save file
 
 ---
 
