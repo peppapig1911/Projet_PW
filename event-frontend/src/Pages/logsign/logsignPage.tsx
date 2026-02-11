@@ -1,20 +1,24 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { LogsignForm, SignupPage } from "./logsignForm.tsx";
-// Assure-toi que le chemin vers ton style est le bon
 import "../styles/LogSignPage.scss";
 
+interface User {
+    id: number;
+    username: string;
+}
+
 interface LogsignPageProps {
-    setUser: (user: any) => void;
+    setUser: (user: User) => void;
 }
 
 export default function LogsignPage({ setUser }: LogsignPageProps) {
     const location = useLocation();
     const [activeTab, setActiveTab] = useState("login");
 
-    // Synchronisation de l'onglet avec l'URL (Login ou Signup)
-    useEffect(() => {
+   useEffect(() => {
         if (location.pathname === "/signup") {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setActiveTab("signup");
         } else if (location.pathname === "/login") {
             setActiveTab("login");
@@ -24,7 +28,6 @@ export default function LogsignPage({ setUser }: LogsignPageProps) {
     return (
         <div className="auth-wrapper">
             <div className="auth-tabs-container">
-                {/* C'est cette div 'tabs-header' qui crée le bloc noir avec les boutons dedans */}
                 <div className="tabs-header">
                     <button
                         className={activeTab === "login" ? "active" : ""}

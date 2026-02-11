@@ -34,6 +34,7 @@ exports.login = async (req, res) => {
 exports.signup = async (req, res) => {
     try {
         const { username, password } = req.body;
+        console.log("Signup data received:", req.body);
         const checkUser = await pool.query("SELECT id FROM users WHERE username = $1", [username]);
 
         if (checkUser.rows.length>0) {
@@ -49,8 +50,15 @@ exports.signup = async (req, res) => {
         return res.status(201).json({message: "User created successfully"});
 
     } catch (error) {
-        return res.status(500).json({ error: "Server error" });
-    }
+    console.log("--- DÉBUT DE L'ERREUR ---");
+    console.error(error);
+    console.log("--- FIN DE L'ERREUR ---");
+
+    return res.status(500).json({
+        error: "Server error",
+        detail: error.message
+    });
+}
 };
 
 exports.me = async (req,res)=>{

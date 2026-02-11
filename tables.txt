@@ -1,20 +1,15 @@
 à copier une fois connectée à une database_web :
 
-Table des utilisateurs :
 
-CREATE TABLE public.users (
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL
 );
 
-ALTER TABLE public.users OWNER TO postgres;
 
 
-
-Table des événements :
-
-CREATE TABLE public.event (
+CREATE TABLE event (
     event_id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT,
@@ -27,19 +22,11 @@ CREATE TABLE public.event (
     location TEXT
 );
 
-ALTER TABLE public.event OWNER TO postgres;
 
-
-
-Table de liaison :
-
-
-CREATE TABLE public.event_subscriptions (
+CREATE TABLE event_subscriptions (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES public.users(id) ON DELETE CASCADE,
-    event_id INTEGER REFERENCES public.event(id) ON DELETE CASCADE,
+    event_id INTEGER REFERENCES public.event(event_id) ON DELETE CASCADE,
     registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (user_id, event_id)
 );
-
-ALTER TABLE public.event_subscriptions OWNER TO postgres;

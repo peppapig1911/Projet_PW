@@ -19,36 +19,39 @@ Ce projet consiste à développer une application web full stack.
 
 1. **Git clone** the repository
 
-2. **Make sure you have all the dependencies installed :**
 
-   * **2.1.1.** In folder `event-backend` : type the command `npm install`
-   * **2.2.1.**  do `cd ..` in the terminal
-   * **2.2.3.** In `event-frontend` folder, do `npm install`
+2. **In Terminal 1 :**
 
-   * **2.3.1.** Connect to postgres by typing `psql -U postgres`
-   * **2.3.2.** Create database with `CREATE DATABASE database_web;`
-   * **2.3.3.** Connect to the database by typing : `\c database_web`
-   * **2.3.4.** Copy-Paste all the tables written in the `tables.txt` file to create the tables
+   * cd `event-backend` : 
+       *     type the command `npm install`
+       *     run command `node .\src\server.js`
 
-3. **Modify Front-End Port** if needed (default : 5173) in :  
-   `event-backend/src/server.js` (l.15)
+3. **In Terminal 2 :**
 
-4. **Modify postgres password** in :  
-   `event-backend/db.js` (l.7)
+   * cd `event-frontend` :
+      *     type the command `npm install`
+      *     run command `npm run dev`
 
-5. **Save file**
+
+3. **In Terminal 3 :**
+
+   * Connect to postgres by typing `psql -U postgres` and enter password
+   * Create database with `CREATE DATABASE database_web;`
+   * Connect to the database by typing : `\c database_web`
+   * Copy-Paste all the tables written in the `tables.txt` file to create the tables
+
+* Create Data Source -> PostgreSQL
+* On database_web choose "All schemas"
 
 ---
 
-## How to
+## Frontend
 
-1. Open Terminal in `event-frontend` and run command `npm run dev`
-2. Open Terminal in `event-backend` and run command `node .\src\server.js`
-3. Open another terminal and connect to the database if not connected :
-   * Type `psql -U postgres` and enter your password
-   * Connect to the database by typing : `\c database_web`
 4. Open link and modify port if needed: [http://localhost:5173/](http://localhost:5173/)
 5. **Sign up ! :)**
+6. Once signed up, log in 
+
+(Pour ajouter une image d'internet à un évènement il faudra choisir une image, l'ouvrir dans un nouvel onglet et copier l'url )
 
 ---
 
@@ -64,3 +67,10 @@ Ce projet consiste à développer une application web full stack.
 * Ajouter des notifications pour confirmer le succès des inscriptions/suppressions.
 * Implémenter une barre de recherche et des filtres par catégorie ou par ville.
 * Mettre en place la pagination 
+
+
+### Utilisation de l'IA 
+
+* Pour implémenter le premier form inscription
+* Pour implémenter la logique de compteur et inscription à un évènement
+* Pour afficher les events auxquels nous sommes inscrits
