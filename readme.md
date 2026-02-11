@@ -22,9 +22,7 @@ Ce projet consiste à développer une application web full stack.
 2. **Make sure you have all the dependencies installed :**
 
    * **2.1.1.** In folder `event-backend` : type the command `npm install`
-   * **2.1.2.** In the same folder do `npm install express cors bcryptjs jsonwebtoken`
-
-   * **2.2.1.** Once dependencies installed in `event-backend`, do `cd ..` in the terminal
+   * **2.2.1.**  do `cd ..` in the terminal
    * **2.2.3.** In `event-frontend` folder, do `npm install`
 
    * **2.3.1.** Connect to postgres by typing `psql -U postgres`
@@ -58,8 +56,8 @@ Ce projet consiste à développer une application web full stack.
 
 ### Choix Techniques
 
-* **Sécurité & Authentification :** Implémentation de **JWT** pour une authentification qui permet de sécuriser les routes du back
-* **Gestion du State :** Utilisation des **Hooks React** (`useState`, `useEffect`) pour gérer la synchronisation en temps réel entre la homePage, la detailPage et le ProfilePage
+* Implémentation de **JWT** pour une authentification qui permet de sécuriser les routes du back
+* Utilisation des `useState`, `useEffect` pour gérer la synchronisation en temps réel entre la homePage, la detailPage et le ProfilePage
 
 ### Axes d’Amélioration
 
