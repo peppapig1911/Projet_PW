@@ -4,28 +4,27 @@ Ce projet consiste à développer une application web full stack.
 
 ---
 
-## 💻 Front-end
+## Front-end
 * **React**
 * **React Router**
 
-## ⚙️ Back-end
+## Back-end
 * **Node.js Express**
 * **API REST**
 * **Authentification JWT**
 
 ---
 
-## 🛠 Configuration
+## Configuration
 
 1. **Git clone** the repository
 
 2. **Make sure you have all the dependencies installed :**
 
-   * **2.1.1.** In folder `event-backend` : type the command `npm init -y`
+   * **2.1.1.** In folder `event-backend` : type the command `npm install`
    * **2.1.2.** In the same folder do `npm install express cors bcryptjs jsonwebtoken`
 
    * **2.2.1.** Once dependencies installed in `event-backend`, do `cd ..` in the terminal
-   * **2.2.2.** Then type `npm create vite@latest event-frontend -- --template react-ts`
    * **2.2.3.** In `event-frontend` folder, do `npm install`
 
    * **2.3.1.** Connect to postgres by typing `psql -U postgres`
@@ -43,7 +42,7 @@ Ce projet consiste à développer une application web full stack.
 
 ---
 
-## 📖 How to
+## How to
 
 1. Open Terminal in `event-frontend` and run command `npm run dev`
 2. Open Terminal in `event-backend` and run command `node .\src\server.js`
@@ -55,7 +54,7 @@ Ce projet consiste à développer une application web full stack.
 
 ---
 
-## 💡 Détails du Projet
+## Détails du Projet
 
 ### Choix Techniques
 
